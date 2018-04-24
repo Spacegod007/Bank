@@ -20,23 +20,22 @@ public class DatabaseTest
 
     private EntityManager em;
 
-//    @Before
-//    public void before() throws Exception
-//    {
-//        em = emf.createEntityManager();
-//    }
-//
-//    @After
-//    public void after() throws Exception
-//    {
-//        em.close();
-//    }
+    @Before
+    public void before() throws Exception
+    {
+        new DatabaseCleaner(emf.createEntityManager()).clean();
+        em = emf.createEntityManager();
+    }
+
+    @After
+    public void after() throws Exception
+    {
+        em.close();
+    }
 
     @Test
     public void vraag1() throws Exception
     {
-        em = emf.createEntityManager();
-
         try
         {
             Account account = new Account(111L);
@@ -54,10 +53,6 @@ public class DatabaseTest
         {
             LOGGER.log(Level.SEVERE, "Something went wrong during question 1", e);
             em.getTransaction().rollback();
-        }
-        finally
-        {
-            em.close();
         }
     }
 }
