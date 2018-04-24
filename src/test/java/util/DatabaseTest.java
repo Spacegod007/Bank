@@ -1,5 +1,6 @@
 package util;
 
+import bank.dao.AccountDAOJPAImpl;
 import bank.domain.Account;
 import org.junit.After;
 import org.junit.Before;
@@ -60,6 +61,9 @@ public class DatabaseTest {
             assertNull(account.getId());
             em.getTransaction().rollback();
 // TODO code om te testen dat table account geen records bevat. Hint: bestudeer/gebruik AccountDAOJPAImpl
+            assertEquals(0, new AccountDAOJPAImpl(em).count());
+
+
 
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Something went wrong during question 2", e);
