@@ -23,8 +23,15 @@ public class DatabaseTest {
 
     @Before
     public void before() throws Exception {
-        new DatabaseCleaner(emf.createEntityManager()).clean();
-        em = emf.createEntityManager();
+        try
+        {
+            new DatabaseCleaner(emf.createEntityManager()).clean();
+            em = emf.createEntityManager();
+        }
+        catch (Exception e)
+        {
+            LOGGER.log(Level.CONFIG, "Could not initiate connection to database", e);
+        }
     }
 
     @After
