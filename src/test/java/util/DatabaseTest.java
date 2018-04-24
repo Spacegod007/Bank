@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static junit.framework.TestCase.*;
+import static org.junit.Assert.assertNotEquals;
 
 public class DatabaseTest {
     private static final Logger LOGGER = Logger.getLogger(DatabaseTest.class.getName());
@@ -63,8 +64,6 @@ public class DatabaseTest {
 // TODO code om te testen dat table account geen records bevat. Hint: bestudeer/gebruik AccountDAOJPAImpl
             assertEquals(0, new AccountDAOJPAImpl(em).count());
 
-
-
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Something went wrong during question 2", e);
             em.getTransaction().rollback();
@@ -80,12 +79,13 @@ public class DatabaseTest {
             em.getTransaction().begin();
             em.persist(account);
 //TODO: verklaar en pas eventueel aan
-//assertNotEquals(expected, account.getId();
             em.flush();
+            assertNotEquals(expected, account.getId());
+
 //TODO: verklaar en pas eventueel aan
-//assertEquals(expected, account.getId();
             em.getTransaction().commit();
-//TODO: verklaar en pas eventueel aan
+            assertNotEquals(expected, account.getId());
+
 
 
         } catch (Exception e) {
