@@ -143,17 +143,144 @@ public class DatabaseTest {
 
     @Test
     public void vraag6() throws Exception {
+        AccountDAOJPAImpl accountDAOJPA = new AccountDAOJPAImpl(em);
+
+        Account acc = new Account(1L);
+        Account acc2 = new Account(2L);
+        Account acc9 = new Account(9L);
+
+// scenario 1
+
+        assertEquals("Balance is not equal to initial value (0)", 0L, acc.getBalance().longValue()); //added
+        Long balance1 = 100L;
+        em.getTransaction().begin();
+        em.persist(acc);
+        acc.setBalance(balance1);
+        em.getTransaction().commit();
+        assertEquals("Balance is not equal to the set balance", balance1, acc.getBalance()); //added
+
+//TODO: voeg asserties toe om je verwachte waarde van de attributen te verifieren.
+//TODO: doe dit zowel voor de bovenstaande java objecten als voor opnieuw bij de entitymanager opgevraagde objecten met overeenkomstig Id.
+
+        //check changes in database
+        Long id = acc.getId();
+        EntityManager em2 = emf.createEntityManager();
+        em2.getTransaction().begin();
+        Account testAcc = em2.find(Account.class, id);
+        assertEquals("Balance is not equal to the object in the database", balance1, testAcc.getBalance());
+
+
+
+// scenario 2
+        Long balance2a = 211L;
+        acc = new Account(2L);
+        em.getTransaction().begin();
+        acc9 = em.merge(acc);
+        acc.setBalance(balance2a);
+        acc9.setBalance(balance2a+balance2a);
+        em.getTransaction().commit();
+
+//TODO: voeg asserties toe om je verwachte waarde van de attributen te verifiëren.
+//TODO: doe dit zowel voor de bovenstaande java objecten als voor opnieuw bij de entitymanager opgevraagde objecten met overeenkomstig Id.
+// HINT: gebruik acccountDAO.findByAccountNr
+
+        assertEquals("Balance is not equal to the set balance", balance2a, acc.getBalance());
+        assertEquals("Balance is not equal to the set balance (2)", balance2a+balance2a, acc9.getBalance().longValue());
+
+        testAcc = accountDAOJPA.findByAccountNr(acc.getAccountNr());
+        Account testAcc9 = accountDAOJPA.findByAccountNr(acc9.getAccountNr());
+
+        assertNotEquals("Balance is equal to the incorrect balance in database", balance2a, testAcc.getBalance());
+        assertEquals("Balance is not equal to the set balance in database (2)", balance2a+balance2a, testAcc9.getBalance().longValue());
+
+
+// scenario 3
+        // TODO: 30-Apr-18 continue working here
+        Long balance3b = 322L;
+        Long balance3c = 333L;
+        acc = new Account(3L);
+        em.getTransaction().begin();
+        acc2 = em.merge(acc);
+
+        assertTrue(em.contains(acc)); // verklaar
+        assertTrue(em.contains(acc2)); // verklaar
+        assertEquals(acc, acc2);  //verklaar
+
+        acc2.setBalance(balance3b);
+        acc.setBalance(balance3c);
+        em.getTransaction().commit();
+//TODO: voeg asserties toe om je verwachte waarde van de attributen te verifiëren.
+//TODO: doe dit zowel voor de bovenstaande java objecten als voor opnieuw bij de entitymanager opgevraagde objecten met overeenkomstig Id.
+
+
+// scenario 4
+        Account account = new Account(114L) ;
+        account.setBalance(450L) ;
+        EntityManager em = emf.createEntityManager() ;
+        em.getTransaction().begin() ;
+        em.persist(account) ;
+        em.getTransaction().commit() ;
+
+
+        Account account2 = new Account(114L) ;
+        Account tweedeAccountObject = account2 ;
+        tweedeAccountObject.setBalance(650l) ;
+        assertEquals((Long)650L,account2.getBalance()) ;  //verklaar
+        account2.setId(account.getId()) ;
+        em.getTransaction().begin() ;
+        account2 = em.merge(account2) ;
+        assertSame(account,account2) ;  //verklaar
+        assertTrue(em.contains(account2)) ;  //verklaar
+        assertFalse(em.contains(tweedeAccountObject)) ;  //verklaar
+        tweedeAccountObject.setBalance(850l) ;
+        assertEquals((Long)650L,account.getBalance()) ;  //verklaar
+        assertEquals((Long)650L,account2.getBalance()) ;  //verklaar
+        em.getTransaction().commit() ;
+        em.close() ;
 
     }
 
     @Test
     public void vraag7() throws Exception {
+        Account acc1 = new Account(77L);
+        em.getTransaction().begin();
+        em.persist(acc1);
+        em.getTransaction().commit();
+//Database bevat nu een account.
 
+// scenario 1
+        Account accF1;
+        Account accF2;
+        accF1 = em.find(Account.class, acc1.getId());
+        accF2 = em.find(Account.class, acc1.getId());
+        assertSame(accF1, accF2);
+
+// scenario 2
+        accF1 = em.find(Account.class, acc1.getId());
+        em.clear();
+        accF2 = em.find(Account.class, acc1.getId());
+        assertSame(accF1, accF2);
+//TODO verklaar verschil tussen beide scenario’s
+        /*
+        In scenario 1 zijn beide objecten uit de database gehaald waarbij het zelfde object wordt teruggestuurd maar op twee verschillende punten in het geheugen (pointers worden vergeleken '==')
+        In scenario 2 wordt nadat accF1 is opgehaald de context van de EntityManager gecleared waarna het tweede object wordt opgehaald
+        */
     }
 
     @Test
     public void vraag8() throws Exception {
+        Account acc1 = new Account(88L);
+        em.getTransaction().begin();
+        em.persist(acc1);
+        em.getTransaction().commit();
+        Long id = acc1.getId();
+//Database bevat nu een account.
 
+        em.remove(acc1); //changed "Em.remove(acc1)" to current
+        assertEquals(id, acc1.getId()); //de data is uit de database gehaald maar lokaal leeft het object nog
+        Account accFound = em.find(Account.class, id);
+        assertNull(accFound); //de data is uit de database gehaald dus er wordt geen data gevonden waardoor null wordt teruggestuurd
+//TODO: verklaar bovenstaande asserts
     }
 
     @Test

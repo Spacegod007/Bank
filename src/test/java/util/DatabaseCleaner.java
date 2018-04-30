@@ -1,9 +1,12 @@
 package util;
 
 import bank.domain.Account;
-import java.sql.SQLException;
+import org.junit.Test;
+
 import javax.persistence.EntityManager;
+import javax.persistence.Persistence;
 import javax.persistence.metamodel.EntityType;
+import java.sql.SQLException;
 
 public class DatabaseCleaner {
 
@@ -30,8 +33,14 @@ public class DatabaseCleaner {
         em.createQuery("delete from " + getEntityName(entityType)).executeUpdate();
     }
 
-    protected String getEntityName(Class<?> clazz) {
+    private String getEntityName(Class<?> clazz) {
         EntityType et = em.getMetamodel().entity(clazz);
         return et.getName();
+    }
+
+    @Test
+    public void cleanAll() throws Exception
+    {
+        new DatabaseCleaner(Persistence.createEntityManagerFactory("bankPU").createEntityManager()).clean();
     }
 }
