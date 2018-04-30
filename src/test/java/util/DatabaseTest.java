@@ -135,7 +135,7 @@ public class DatabaseTest {
         account.setBalance(500L); //change the value from connection A
         em.getTransaction().commit();
 
-        em2.refresh(found); //refresh connection 2
+        em2.refresh(found); //refresh object 'found'
 
         assertEquals(500L, found.getBalance().longValue());
         //check if value changed in connection 2
@@ -276,7 +276,9 @@ public class DatabaseTest {
         Long id = acc1.getId();
 //Database bevat nu een account.
 
+        em.getTransaction().begin();
         em.remove(acc1); //changed "Em.remove(acc1)" to current
+        em.getTransaction().commit();
         assertEquals(id, acc1.getId()); //de data is uit de database gehaald maar lokaal leeft het object nog
         Account accFound = em.find(Account.class, id);
         assertNull(accFound); //de data is uit de database gehaald dus er wordt geen data gevonden waardoor null wordt teruggestuurd
@@ -285,6 +287,5 @@ public class DatabaseTest {
 
     @Test
     public void vraag9() throws Exception {
-
     }
 }
