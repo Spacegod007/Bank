@@ -12,6 +12,8 @@ import javax.persistence.*;
 public class Account implements Serializable {
 
     @Id
+//    @GeneratedValue(strategy = GenerationType.TABLE)
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
     @Column(unique = true)
